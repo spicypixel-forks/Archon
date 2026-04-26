@@ -468,6 +468,7 @@ async function resolveNodeProviderAndModel(
 
   // Build raw nodeConfig — provider translates internally
   const nodeConfig: NodeConfig = {
+    nodeId: node.id,
     mcp: node.mcp,
     hooks: node.hooks,
     skills: node.skills,
