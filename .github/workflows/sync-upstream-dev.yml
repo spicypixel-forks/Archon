@@ -1,0 +1,31 @@
+name: Sync upstream dev
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "5 */8 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add upstream
+        run: |
+          git remote add upstream https://github.com/coleam00/Archon.git
+
+      - name: Sync dev
+        run: |
+          git fetch upstream
+          git checkout dev
+          git reset --hard upstream/dev
+          git push origin dev --force-with-lease

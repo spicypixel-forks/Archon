@@ -1,0 +1,38 @@
+name: Publish dev patched image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev-patched
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/archon
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev-patched
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build image
+        run: |
+          docker build \
+            -t "$IMAGE_NAME:dev-patched" \
+            -t "$IMAGE_NAME:dev-patched-${{ github.sha }}" \
+            .
+
+      - name: Push image
+        run: |
+          docker push "$IMAGE_NAME:dev-patched"
+          docker push "$IMAGE_NAME:dev-patched-${{ github.sha }}"

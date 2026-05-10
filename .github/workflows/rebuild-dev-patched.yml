@@ -1,0 +1,31 @@
+name: Rebuild dev-patched
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - "patch/**"
+      - "upstream-patch/**"
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: automation
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Rebuild dev-patched
+        run: ./scripts/rebuild-dev-patched.sh
