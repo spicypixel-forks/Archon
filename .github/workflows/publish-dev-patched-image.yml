@@ -25,14 +25,18 @@ jobs:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
+      - name: Set short SHA
+        id: vars
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build image
         run: |
           docker build \
             -t "$IMAGE_NAME:dev-patched" \
-            -t "$IMAGE_NAME:dev-patched-${{ github.sha }}" \
+            -t "$IMAGE_NAME:dev-patched-${{ steps.vars.outputs.short_sha }}" \
             .
 
       - name: Push image
         run: |
           docker push "$IMAGE_NAME:dev-patched"
-          docker push "$IMAGE_NAME:dev-patched-${{ github.sha }}"
+          docker push "$IMAGE_NAME:dev-patched-${{ steps.vars.outputs.short_sha }}"
