@@ -142,6 +142,9 @@ COPY packages/workflows/package.json ./packages/workflows/
 # Install production dependencies only (--ignore-scripts skips husky prepare hook)
 RUN bun install --frozen-lockfile --production --ignore-scripts --linker=hoisted
 
+# Install global CLI agents (OpenCode terminal IDE and Pi coding agent)
+RUN bun add -g opencode-ai @earendil-works/pi-coding-agent
+
 # Copy application source (Bun runs TypeScript directly, no compile step needed)
 COPY packages/adapters/ ./packages/adapters/
 COPY packages/cli/ ./packages/cli/
