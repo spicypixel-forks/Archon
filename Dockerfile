@@ -143,7 +143,19 @@ COPY packages/workflows/package.json ./packages/workflows/
 RUN bun install --frozen-lockfile --production --ignore-scripts --linker=hoisted
 
 # Install global CLI agents (OpenCode terminal IDE and Pi coding agent)
-RUN bun add -g opencode-ai @earendil-works/pi-coding-agent
+
+# Set a shared global prefix for bun
+ENV BUN_INSTALL_GLOBAL_DIR=/usr/local/bun
+
+# Install global packages to the shared location
+RUN bun install -g opencode-ai @earendil-works/pi-coding-agent \
+    --global-dir /usr/local/bun
+
+# Ensure the global bin directory is in PATH for all users
+ENV PATH="/usr/local/bun/bin:${PATH}"
+
+# Ensure proper permissions
+RUN chmod -R 755 /usr/local/bun
 
 # Copy application source (Bun runs TypeScript directly, no compile step needed)
 COPY packages/adapters/ ./packages/adapters/
