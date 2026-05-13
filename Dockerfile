@@ -84,6 +84,12 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
+# Install uv (fast Python package installer by Astral) — system-wide for all users
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh -s -- -y \
+    && mv /root/.local/bin/uv /usr/local/bin/uv \
+    && mv /root/.local/bin/uvx /usr/local/bin/uvx \
+    && rm -rf /root/.local/bin
+
 # Install agent-browser CLI (Vercel Labs) for E2E testing workflows
 # - Uses npm (not bun) because postinstall script downloads the native Rust binary
 # - After install, symlink the Rust binary directly and purge nodejs/npm (~60MB saved)
