@@ -85,7 +85,7 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv (fast Python package installer by Astral) — system-wide for all users
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh -s -- -y \
+RUN curl -LsSf https://astral.sh/uv/install.sh | bash -s -- -y \
     && mv /root/.local/bin/uv /usr/local/bin/uv \
     && mv /root/.local/bin/uvx /usr/local/bin/uvx \
     && rm -rf /root/.local/bin
