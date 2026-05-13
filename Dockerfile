@@ -157,6 +157,9 @@ ENV PATH="/usr/local/bun/bin:${PATH}"
 # Ensure proper permissions
 RUN chmod -R 755 /usr/local/bun
 
+# Install Pi MCP adapter (npm package)
+RUN pi install npm:pi-mcp-adapter
+
 # Copy application source (Bun runs TypeScript directly, no compile step needed)
 COPY packages/adapters/ ./packages/adapters/
 COPY packages/cli/ ./packages/cli/
