@@ -148,6 +148,9 @@ COPY packages/workflows/package.json ./packages/workflows/
 # Install production dependencies only (--ignore-scripts skips husky prepare hook)
 RUN bun install --frozen-lockfile --production --ignore-scripts --linker=hoisted
 
+# Ensure appuser can access Bun's global cache
+RUN chown -R appuser:appuser /root/.bun
+
 # Use bun as an npm shim
 RUN ln -s $(which bun) /usr/local/bin/npm
 
