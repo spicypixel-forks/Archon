@@ -107,7 +107,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
        fi \
     && npm cache clean --force \
     && rm -rf /usr/local/lib/node_modules/agent-browser \
-    && apt-get purge -y nodejs npm \
+    # && apt-get purge -y nodejs npm \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -148,16 +148,13 @@ COPY packages/workflows/package.json ./packages/workflows/
 # Install production dependencies only (--ignore-scripts skips husky prepare hook)
 RUN bun install --frozen-lockfile --production --ignore-scripts --linker=hoisted
 
-# Ensure appuser can access Bun's global cache
-RUN chown -R appuser:appuser /root/.bun
-
-# Use bun as an npm shim
-RUN ln -s $(which bun) /usr/local/bin/npm
-
 # Install global CLI agents (OpenCode terminal IDE and Pi coding agent)
-RUN gosu appuser bun install -g opencode-ai @earendil-works/pi-coding-agent && \
-    gosu appuser pi install npm:pi-mcp-adapter && \
-    gosu appuser pi install npm:@plannotator/pi-extension
+RUN npm install -g opencode-ai @earendil-works/pi-coding-agent
+
+# Install pi extensions
+RUN chown -R appuser:appuser /usr/local/lib/node_modules /usr/local/bin \
+ && gosu appuser sh -c 'pi install npm:pi-mcp-adapter && pi install npm:@plannotator/pi-extension' \
+ && chown -R root:root /usr/local/lib/node_modules /usr/local/bin
 
 # Copy application source (Bun runs TypeScript directly, no compile step needed)
 COPY packages/adapters/ ./packages/adapters/
