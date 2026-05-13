@@ -157,6 +157,9 @@ ENV PATH="/usr/local/bun/bin:${PATH}"
 # Ensure proper permissions
 RUN chmod -R 755 /usr/local/bun
 
+# Use bun as an npm shim
+RUN ln -s $(which bun) /usr/local/bin/npm
+
 # Install Pi MCP adapter (npm package)
 RUN pi install npm:pi-mcp-adapter
 
