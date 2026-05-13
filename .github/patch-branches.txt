@@ -1,2 +1,3 @@
-upstream-patch/pr-1590
+upstream-patch/pr-1634
+upstream-patch/pr-1384
 patch/add-community-tools-to-image
