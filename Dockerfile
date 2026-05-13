@@ -148,26 +148,13 @@ COPY packages/workflows/package.json ./packages/workflows/
 # Install production dependencies only (--ignore-scripts skips husky prepare hook)
 RUN bun install --frozen-lockfile --production --ignore-scripts --linker=hoisted
 
-# Install global CLI agents (OpenCode terminal IDE and Pi coding agent)
-
-# Set a shared global prefix for bun
-ENV BUN_INSTALL_GLOBAL_DIR=/usr/local/bun
-
-# Install global packages to the shared location
-RUN bun install -g opencode-ai @earendil-works/pi-coding-agent \
-    --global-dir /usr/local/bun
-
-# Ensure the global bin directory is in PATH for all users
-ENV PATH="/usr/local/bun/bin:${PATH}"
-
-# Ensure proper permissions
-RUN chmod -R 755 /usr/local/bun
-
 # Use bun as an npm shim
 RUN ln -s $(which bun) /usr/local/bin/npm
 
-# Install Pi MCP adapter (npm package)
-RUN pi install npm:pi-mcp-adapter
+# Install global CLI agents (OpenCode terminal IDE and Pi coding agent)
+RUN gosu appuser bun install -g opencode-ai @earendil-works/pi-coding-agent && \
+    gosu appuser pi install npm:pi-mcp-adapter && \
+    gosu appuser pi install npm:@plannotator/pi-extension
 
 # Copy application source (Bun runs TypeScript directly, no compile step needed)
 COPY packages/adapters/ ./packages/adapters/
