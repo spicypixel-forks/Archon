@@ -422,6 +422,48 @@ describe('cloneRepository', () => {
       delete process.env.GITEA_TOKEN;
     });
 
+    test('injects GITEA_TOKEN when clone hostname matches GITEA_URL', async () => {
+      process.env.GITEA_TOKEN = 'gitea-token-789';
+      process.env.GITEA_URL = 'https://git.example.com';
+      delete process.env.GH_TOKEN;
+      mockCreateCodebase.mockResolvedValueOnce(
+        makeCodebase({
+          name: 'group/repo',
+          repository_url: 'https://git.example.com/group/repo',
+        }) as ReturnType<typeof makeCodebase>
+      );
+
+      await cloneRepository('https://git.example.com/group/repo.git');
+
+      const cloneCall = (spyExecFileAsync.mock.calls as string[][]).find(
+        args => args[0] === 'git' && args[1]?.[0] === 'clone'
+      );
+      expect(cloneCall?.[1]?.[1]).toBe('https://gitea-token-789@git.example.com/group/repo.git');
+      delete process.env.GITEA_TOKEN;
+      delete process.env.GITEA_URL;
+    });
+
+    test('does not inject GITEA_TOKEN when clone hostname differs from GITEA_URL', async () => {
+      process.env.GITEA_TOKEN = 'gitea-token-789';
+      process.env.GITEA_URL = 'https://git.example.com';
+      delete process.env.GH_TOKEN;
+      mockCreateCodebase.mockResolvedValueOnce(
+        makeCodebase({
+          name: 'owner/repo',
+          repository_url: 'https://github.com/owner/repo',
+        }) as ReturnType<typeof makeCodebase>
+      );
+
+      await cloneRepository('https://github.com/owner/repo');
+
+      const cloneCall = (spyExecFileAsync.mock.calls as string[][]).find(
+        args => args[0] === 'git' && args[1]?.[0] === 'clone'
+      );
+      expect(cloneCall?.[1]?.[1]).toBe('https://github.com/owner/repo');
+      delete process.env.GITEA_TOKEN;
+      delete process.env.GITEA_URL;
+    });
+
     test('does not inject auth for unknown forge without token', async () => {
       delete process.env.GH_TOKEN;
       delete process.env.GITLAB_TOKEN;

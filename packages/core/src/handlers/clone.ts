@@ -97,6 +97,20 @@ export function resolveForgeAuth(url: string): { token: string | undefined; sche
     }
   }
 
+  // 3. Fallback: if GITEA_URL is set and the clone hostname matches it,
+  //    use GITEA_TOKEN. This handles self-hosted instances where the
+  //    hostname doesn't contain "gitea" as a label (e.g. git.example.com).
+  const giteaUrl = process.env.GITEA_URL;
+  if (giteaUrl) {
+    const giteaHostname = safeParseUrl(giteaUrl)?.hostname;
+    if (giteaHostname && hostname === giteaHostname) {
+      const token = process.env.GITEA_TOKEN;
+      if (token) {
+        return { token, scheme: '' };
+      }
+    }
+  }
+
   return { token: undefined, scheme: '' };
 }
 
