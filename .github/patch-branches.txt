@@ -2,3 +2,4 @@ upstream-patch/1267
 upstream-patch/1554
 upstream-patch/1384
 patch/add-community-tools-to-image
+patch/fix-gitea-auth-hostname-detection
