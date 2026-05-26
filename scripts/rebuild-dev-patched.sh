@@ -8,6 +8,7 @@ PATCH_LIST="${PATCH_LIST:-.github/patch-branches.txt}"
 git fetch origin '+refs/heads/*:refs/remotes/origin/*'
 
 git switch -C "$TARGET_BRANCH" "origin/$BASE_BRANCH"
+git branch --set-upstream-to="origin/$TARGET_BRANCH"
 
 git show "origin/automation:$PATCH_LIST" > /tmp/patch-branches.txt
 
