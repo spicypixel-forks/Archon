@@ -95,7 +95,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | bash -s -- \
 # - After install, symlink the Rust binary directly and purge nodejs/npm (~60MB saved)
 # - The npm entry point is a Node.js wrapper; the native binary works standalone
 # - agent-browser auto-detects Docker (via /.dockerenv) and adds --no-sandbox to Chromium
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
+# Install Node.js 22 (pi-coding-agent >= 0.75.5 requires >= 22.19.0)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get update && apt-get install -y --no-install-recommends nodejs npm \
     && npm install -g agent-browser@0.22.1 \
     && NATIVE_BIN=$(find /usr/local/lib/node_modules/agent-browser -name 'agent-browser-*' -type f -executable 2>/dev/null | head -1) \
     && if [ -n "$NATIVE_BIN" ]; then \
